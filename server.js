@@ -9,11 +9,11 @@ const config = require("./src/config/database.config.js");
 const app = express();
 const port = process.env.PORT || 5000;
 
-const connection = mysql.createConnection(config);
-connection.connect((err) => {
-  if (err) throw err;
-  console.log("Connected!");
-});
+// const connection = mysql.createConnection(config);
+// connection.connect((err) => {
+//   if (err) throw err;
+//   console.log("Connected!");
+// });
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
