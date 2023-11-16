@@ -44,4 +44,4 @@ jobs:
             docker stop dreamhome || true
             docker rm dreamhome || true
             docker pull ${{ secrets.DOCKER_USERNAME }}/dreamhome-api:latest
-            docker run -d -p --network=db_default 5000:5000 --name dreamhome-api ${{ secrets.DOCKER_USERNAME }}/dreamhome-api:${{ github.sha }}
+            docker run -d -p 5000:5000 --network=db_default --name dreamhome-api ${{ secrets.DOCKER_USERNAME }}/dreamhome-api:${{ github.sha }}
