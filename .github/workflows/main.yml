@@ -41,7 +41,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            docker stop dreamhome || true
-            docker rm dreamhome || true
+            docker stop dreamhome-api || true
+            docker rm dreamhomea-api || true
             docker pull ${{ secrets.DOCKER_USERNAME }}/dreamhome-api:latest
             docker run -d -p 5000:5000 --network=db_default --name dreamhome-api ${{ secrets.DOCKER_USERNAME }}/dreamhome-api:${{ github.sha }}
