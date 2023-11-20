@@ -82,6 +82,12 @@ const loginUser = async (req, res) => {
         }
 
         const userData = result[0].flat();
+        if (!userData || userData.length === 0) {
+          // User not found
+          return res
+            .status(404)
+            .json(responseMessage("User not found", null, "fail", null));
+        }
         // console.log(userData);
         const validPassword = await bcrypt.compare(
           req.body.password,
@@ -94,7 +100,7 @@ const loginUser = async (req, res) => {
             .json(responseMessage("Wrong password", null, "fail", null));
         }
         if (userData && validPassword) {
-          const token = generateToken(userData[0].user_id);
+          const token = generateToken({ userID: userData[0].user_id });
 
           res.cookie("token", token, {
             httpOnly: true,
@@ -138,6 +144,12 @@ const logoutUser = async (req, res) => {
       .status(500)
       .json(responseMessage("Internal Server error", null, "fail", null));
   }
+};
+
+const getUserInfor = async (req, res) => {
+  try {
+    const connection = mysql.createPool(config);
+  } catch (err) {}
 };
 
 module.exports = { registerUser, checkUser, loginUser, logoutUser };
