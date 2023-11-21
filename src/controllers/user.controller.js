@@ -1,8 +1,9 @@
 const mysql = require("mysql2");
+const mysql2 = require("mysql2/promise.js");
 const bcrypt = require("bcrypt");
 const config = require("../config/database.config.js");
 const responseMessage = require("../helpers/responseMessage.js");
-const generateToken = require("../helpers/authHelpers.js");
+const { generateToken, decodeToken } = require("../helpers/authHelpers.js");
 
 const hashPassword = async (userPassword) => {
   var salt = bcrypt.genSaltSync(10);
@@ -37,33 +38,30 @@ const registerUser = async (req, res) => {
   }
 };
 
-const checkUser = async (userEmail) => {
+const checkUser = async (req, res) => {
   try {
-    const connection = mysql.createPool(config);
+    const userEmail = req.params.email;
+    const connection = await mysql2.createConnection(config);
 
-    let resutl = connection.query(
+    const result = await connection.query(
       `CALL sp_check_user_exist('${userEmail}', @user_exists_result)`
     );
-    let exist = await connection.query(
+
+    const exist = await connection.query(
       `SELECT @user_exists_result AS user_exists_result`
     );
-
-    // console.log(exist[0][0].user_exists_result);
     connection.end();
-    if (exist[0][0].user_exists_result == 1) {
-      return {
-        EM: "User exists",
-        success: true,
-      };
-    } else {
-      return {
-        EM: "User does not exist",
-        success: false,
-      };
-    }
-  } catch (error) {
-    console.log("Check user error: " + error);
-    return {};
+    const userExists = exist.slice(0, -1).flat();
+    // console.log(userExists);
+
+    return res
+      .status(200)
+      .json(responseMessage("User checked", null, "success", userExists));
+  } catch (err) {
+    console.log(err);
+    return res
+      .status(500)
+      .json(responseMessage("Internal server error", null, "fail", null));
   }
 };
 
@@ -148,8 +146,109 @@ const logoutUser = async (req, res) => {
 
 const getUserInfor = async (req, res) => {
   try {
+    const userId = req.user.data.userID;
+    // console.log(userId);
     const connection = mysql.createPool(config);
-  } catch (err) {}
+    const sqlQuery = `CALL sp_get_user_by_id(?)`;
+    connection.query(sqlQuery, [userId], function handleQuery(err, result) {
+      if (err) {
+        return res
+          .status(400)
+          .json(responseMessage(err.sqlMessage, null, "fail", null));
+      }
+      const userData = result[0].flat();
+      if (!userData || userData.length == 0) {
+        // User not found
+        return res
+          .status(404)
+          .json(responseMessage("User not found", null, "fail", null));
+      }
+      return res
+        .status(200)
+        .json(responseMessage("User found", userData, "success", null));
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
 };
 
-module.exports = { registerUser, checkUser, loginUser, logoutUser };
+const updateUserInfor = async (req, res) => {
+  try {
+    const userId = req.user.data.userID;
+    const { email, name, password, phone, image } = req.body;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_update_user(?, ?, ?, ?, ?)`;
+    connection.query(
+      sqlQuery,
+      [userId, email, name, phone, image],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        const userData = result[0].flat();
+        if (!userData || userData.length == 0) {
+          // User not found
+          return res
+            .status(404)
+            .json(responseMessage("User not found", null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("User updated", userData, "success", null));
+      }
+    );
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const userId = req.user.data.userID;
+    const password = req.body;
+    const hashedPassword = await hashPassword(password);
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_reset_password(?, ?)`;
+    connection.query(
+      sqlQuery,
+      [userId, hashedPassword],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        const userData = result[0].flat();
+        if (!userData || userData.length == 0) {
+          // User not found
+          return res
+            .status(404)
+            .json(responseMessage("User not found", null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("User updated", userData, "success", null));
+      }
+    );
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+module.exports = {
+  registerUser,
+  checkUser,
+  loginUser,
+  logoutUser,
+  getUserInfor,
+  updateUserInfor,
+  resetPassword,
+};

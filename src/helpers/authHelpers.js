@@ -5,4 +5,9 @@ const generateToken = (data) => {
   return token;
 };
 
-module.exports = generateToken;
+const decodeToken = (token) => {
+  const decoded = jwt.verify(token, process.env.SECRET_KEY);
+  return decoded;
+};
+
+module.exports = { generateToken, decodeToken };
