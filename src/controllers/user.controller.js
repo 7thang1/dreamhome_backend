@@ -177,7 +177,7 @@ const getUserInfor = async (req, res) => {
 const updateUserInfor = async (req, res) => {
   try {
     const userId = req.user.data.userID;
-    const { email, name, password, phone, image } = req.body;
+    const { email, name, phone, image } = req.body;
     const connection = mysql.createPool(config);
     const sqlQuery = `CALL sp_update_user(?, ?, ?, ?, ?)`;
     connection.query(

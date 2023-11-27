@@ -2,6 +2,7 @@ const {
   creatProperty,
   getListProperty,
   getUserInterest,
+  getListUserInterest,
   updateProperty,
   getDetailProperty,
   getListPropertyByUser,
@@ -13,13 +14,13 @@ const {
 } = require("../controllers/property.controller.js");
 const express = require("express");
 const authenticateJWT = require("../middlewares/authMiddleware.js");
-const { route } = require("./user.router.js");
 
 const router = express.Router();
 
 router.route("/createproperty").post(authenticateJWT, creatProperty);
 router.route("/getlistproperty").get(getListProperty);
 router.route("/getuserinterest").get(authenticateJWT, getUserInterest);
+router.route("/getlistuserinterest").get(authenticateJWT, getListUserInterest);
 router.route("/updateproperty").put(authenticateJWT, updateProperty);
 router
   .route("/getdetailproperty/:propertyId")

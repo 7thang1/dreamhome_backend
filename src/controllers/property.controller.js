@@ -116,6 +116,35 @@ const getUserInterest = async (req, res) => {
   try {
     const userId = req.user.data.userID;
     const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_get_interest_list(?)`;
+    connection.query(sqlQuery, [userId], function handleQuery(err, result) {
+      if (err) {
+        return res
+          .status(400)
+          .json(responseMessage(err.sqlMessage, null, "fail", null));
+      }
+      const userData = result[0].flat();
+      if (!userData || userData.length == 0) {
+        // User not found
+        return res
+          .status(404)
+          .json(responseMessage("List not found", null, "fail", null));
+      }
+      return res
+        .status(200)
+        .json(responseMessage("User interest list", userData, "success", null));
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+const getListUserInterest = async (req, res) => {
+  try {
+    const userId = req.user.data.userID;
+    const connection = mysql.createPool(config);
     const sqlQuery = `CALL sp_get_list_property_interest_by_user(?)`;
     connection.query(sqlQuery, [userId], function handleQuery(err, result) {
       if (err) {
@@ -417,6 +446,7 @@ module.exports = {
   creatProperty,
   getListProperty,
   getUserInterest,
+  getListUserInterest,
   updateProperty,
   getDetailProperty,
   getListPropertyByUser,
