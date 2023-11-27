@@ -5,7 +5,9 @@ const config = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   dateStrings: "date",
-  connectionLimit: 50,
+  connectionLimit: 100,
+  maxIdle: 100,
+  idleTimeout: 6000,
 };
 
 module.exports = config;

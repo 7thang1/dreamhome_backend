@@ -420,26 +420,36 @@ const getDistricts = async (req, res) => {
 };
 
 const getWards = async (req, res) => {
-  const districtCode = req.params.districtCode;
-  const connection = mysql.createPool(config);
-  const sqlQuery = `CALL sp_get_ward_list(?)`;
-  connection.query(sqlQuery, [districtCode], function handleQuery(err, result) {
-    if (err) {
-      return res
-        .status(400)
-        .json(responseMessage(err.sqlMessage, null, "fail", null));
-    }
-    const userData = result[0].flat();
-    if (!userData || userData.length == 0) {
-      // User not found
-      return res
-        .status(404)
-        .json(responseMessage("Wards not found", null, "fail", null));
-    }
+  try {
+    const districtCode = req.params.districtCode;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_get_ward_list(?)`;
+    connection.query(
+      sqlQuery,
+      [districtCode],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        const userData = result[0].flat();
+        if (!userData || userData.length == 0) {
+          // User not found
+          return res
+            .status(404)
+            .json(responseMessage("Wards not found", null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("Wards", userData, "success", null));
+      }
+    );
+  } catch (err) {
     return res
-      .status(200)
-      .json(responseMessage("Wards", userData, "success", null));
-  });
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
 };
 
 module.exports = {
