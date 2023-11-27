@@ -116,7 +116,7 @@ const getUserInterest = async (req, res) => {
   try {
     const userId = req.user.data.userID;
     const connection = mysql.createPool(config);
-    const sqlQuery = `CALL sp_get_user_interest(?)`;
+    const sqlQuery = `CALL sp_get_list_property_interest_by_user(?)`;
     connection.query(sqlQuery, [userId], function handleQuery(err, result) {
       if (err) {
         return res
@@ -193,10 +193,27 @@ const updateProperty = async (req, res) => {
             .json(responseMessage(err.message, null, "fail", null));
         }
 
+        const data = result[0].map((item) => item.property_id);
+        const property_id = data.flat();
         const imageUrlsQuery = `CALL sp_update_property_images(?, ?)`;
+        connection.query(imageUrlsQuery, [property_id, imageUrls], (err) => {
+          if (err) {
+            return res
+              .status(400)
+              .json(responseMessage(err.message, null, "fail", null));
+          }
+
+          return res
+            .status(200)
+            .json(responseMessage("Property updated", null, "success", null));
+        });
       }
     );
-  } catch (err) {}
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
 };
 
 const getListPropertyByUser = async (req, res) => {
@@ -250,6 +267,61 @@ const getDetailProperty = async (req, res) => {
         .status(200)
         .json(responseMessage("Property detail", userData, "success", null));
     });
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+// const deleteProperty = async (req, res) => {};
+const insertInterest = async (req, res) => {
+  try {
+    const userId = req.user.data.userID;
+    const propertyId = req.body.propertyId;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_insert_interest(?, ?)`;
+    connection.query(
+      sqlQuery,
+      [userId, propertyId],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("Insert interest", null, "success", null));
+      }
+    );
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+const removeInterest = async (req, res) => {
+  try {
+    const userId = req.user.data.userID;
+    const propertyId = req.body.propertyId;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_remove_interest(?, ?)`;
+    connection.query(
+      sqlQuery,
+      [userId, propertyId],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("Remove interest", null, "success", null));
+      }
+    );
   } catch (err) {
     return res
       .status(500)
@@ -345,8 +417,11 @@ module.exports = {
   creatProperty,
   getListProperty,
   getUserInterest,
+  updateProperty,
   getDetailProperty,
   getListPropertyByUser,
+  insertInterest,
+  removeInterest,
   getProvinces,
   getDistricts,
   getWards,
