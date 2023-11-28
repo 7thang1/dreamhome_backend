@@ -84,7 +84,7 @@ const creatProperty = async (req, res) => {
 const getListProperty = async (req, res) => {
   try {
     const pageNumber = req.query.pageNumber;
-    const pageSize = 16;
+    const pageSize = 12;
 
     const connection = mysql.createPool(config);
     const sqlQuery = `CALL sp_get_list_property(?, ?)`;
@@ -245,6 +245,41 @@ const updateProperty = async (req, res) => {
   }
 };
 
+const getListPropertybyCategory = async (req, res) => {
+  try {
+    const category = req.params.category;
+    const pageNumber = req.query.pageNumber;
+    const pageSize = 12;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_get_property_by_catagory(?)`;
+    connection.query(
+      sqlQuery,
+      [category, pageNumber, pageSize],
+      (err, result) => {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.message, null, "fail", null));
+        }
+        const properties = result[0].flat();
+        if (!properties || properties.length == 0) {
+          // Property not found
+          return res
+            .status(404)
+            .json(responseMessage("Property not found", null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(responseMessage("Property found", properties, "success", null));
+      }
+    );
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
 const getListPropertyByUser = async (req, res) => {
   try {
     const userId = req.user.data.userID;
@@ -296,6 +331,35 @@ const getDetailProperty = async (req, res) => {
         .status(200)
         .json(responseMessage("Property detail", userData, "success", null));
     });
+  } catch (err) {
+    return res
+      .status(500)
+      .json(responseMessage("Internal Server error", null, "fail", null));
+  }
+};
+
+const updateStatusProperty = async (req, res) => {
+  try {
+    const propertyId = req.body.propertyId;
+    const status = req.body.status;
+    const connection = mysql.createPool(config);
+    const sqlQuery = `CALL sp_update_status_property(?, ?)`;
+    connection.query(
+      sqlQuery,
+      [propertyId, status],
+      function handleQuery(err, result) {
+        if (err) {
+          return res
+            .status(400)
+            .json(responseMessage(err.sqlMessage, null, "fail", null));
+        }
+        return res
+          .status(200)
+          .json(
+            responseMessage("Update status property", null, "success", null)
+          );
+      }
+    );
   } catch (err) {
     return res
       .status(500)
@@ -458,7 +522,9 @@ module.exports = {
   getUserInterest,
   getListUserInterest,
   updateProperty,
+  getListPropertybyCategory,
   getDetailProperty,
+  updateStatusProperty,
   getListPropertyByUser,
   insertInterest,
   removeInterest,

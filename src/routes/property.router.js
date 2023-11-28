@@ -4,7 +4,9 @@ const {
   getUserInterest,
   getListUserInterest,
   updateProperty,
+  getListPropertybyCategory,
   getDetailProperty,
+  updateStatusProperty,
   getListPropertyByUser,
   insertInterest,
   removeInterest,
@@ -23,8 +25,14 @@ router.route("/getuserinterest").get(authenticateJWT, getUserInterest);
 router.route("/getlistuserinterest").get(authenticateJWT, getListUserInterest);
 router.route("/updateproperty").put(authenticateJWT, updateProperty);
 router
+  .route("/getlistpropertybycategory/:category")
+  .get(getListPropertybyCategory);
+router
   .route("/getdetailproperty/:propertyId")
   .get(authenticateJWT, getDetailProperty);
+router
+  .route("/updatestatusproperty")
+  .put(authenticateJWT, updateStatusProperty);
 router
   .route("/getlistpropertybyuser")
   .get(authenticateJWT, getListPropertyByUser);
