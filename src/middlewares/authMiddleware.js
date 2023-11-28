@@ -3,7 +3,7 @@ const responseMessage = require("../helpers/responseMessage.js");
 const secretKey = process.env.SECRET_KEY || "dreamhome_secret";
 
 const authenticateJWT = (req, res, next) => {
-  const { token } = req.cookies;
+  const token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
     return res
