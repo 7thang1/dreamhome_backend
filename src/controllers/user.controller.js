@@ -150,9 +150,8 @@ const updateUserInfor = async (req, res) => {
       [userId, email, name, phone, role, image]
     );
     connection.end();
-    // const userData = result;
-    console.log(userData);
-    if (!userData || userData.length === 0) {
+    const affectedRows = result.affectedRows;
+    if (affectedRows == 0) {
       return res
         .status(404)
         .json(responseMessage("User not found", null, "fail", null));
@@ -160,7 +159,7 @@ const updateUserInfor = async (req, res) => {
 
     return res
       .status(200)
-      .json(responseMessage("User updated", userData, "success", null));
+      .json(responseMessage("User updated", null, "success", null));
   } catch (err) {
     console.log(err);
     return res
@@ -183,9 +182,9 @@ const resetPassword = async (req, res) => {
       hashedPassword,
     ]);
     connection.end();
-    const userData = result;
+    const affectedRows = result.affectedRows;
 
-    if (!userData || userData.length === 0) {
+    if (affectedRows == 0) {
       return res
         .status(404)
         .json(responseMessage("User not found", null, "fail", null));
@@ -193,7 +192,7 @@ const resetPassword = async (req, res) => {
 
     return res
       .status(200)
-      .json(responseMessage("Password updated", userData, "success", null));
+      .json(responseMessage("Password updated", null, "success", null));
   } catch (err) {
     return res
       .status(500)

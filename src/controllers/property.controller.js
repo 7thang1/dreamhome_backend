@@ -178,31 +178,41 @@ const updateProperty = async (req, res) => {
 
     const connection = await mysql.createConnection(config);
 
-    await connection.query(`CALL sp_update_property(?, ?, ...)`, [
-      userId,
-      propertyId,
-      propertyName,
-      shortDescription,
-      detailDescription,
-      price,
-      provinceCode,
-      districtCode,
-      wardCode,
-      address,
-      bedroom,
-      bathroom,
-      constructionYear,
-      parkingSlot,
-      propertyCategory,
-      category,
-      area,
-    ]);
+    const [result] = await connection.query(
+      `CALL sp_update_property(?, ?, ...)`,
+      [
+        userId,
+        propertyId,
+        propertyName,
+        shortDescription,
+        detailDescription,
+        price,
+        provinceCode,
+        districtCode,
+        wardCode,
+        address,
+        bedroom,
+        bathroom,
+        constructionYear,
+        parkingSlot,
+        propertyCategory,
+        category,
+        area,
+      ]
+    );
 
-    await connection.query(`CALL sp_update_property_images(?, ?)`, [
-      propertyId,
-      JSON.stringify(imageUrls),
-    ]);
+    const [results] = await connection.query(
+      `CALL sp_update_property_images(?, ?)`,
+      [propertyId, JSON.stringify(imageUrls)]
+    );
     connection.end();
+    const affectedRow = result.affectedRows;
+    const affectedRows = results.affectedRows;
+    if (affectedRow == 0 || affectedRows == 0) {
+      return res
+        .status(404)
+        .json(responseMessage("Update property fail", null, "fail", null));
+    }
     return res
       .status(200)
       .json(responseMessage("Property updated", null, "success", null));
@@ -308,11 +318,17 @@ const updateStatusProperty = async (req, res) => {
 
     const connection = await mysql.createConnection(config);
 
-    await connection.query(`CALL sp_update_status_property(?, ?)`, [
-      propertyId,
-      status,
-    ]);
+    const [result] = await connection.query(
+      `CALL sp_update_status_property(?, ?)`,
+      [propertyId, status]
+    );
     connection.end();
+    const affectedRows = result.affectedRows;
+    if (affectedRows == 0) {
+      return res
+        .status(404)
+        .json(responseMessage("Update status fail", null, "success", null));
+    }
     return res
       .status(200)
       .json(responseMessage("Update status property", null, "success", null));
@@ -330,15 +346,22 @@ const insertInterest = async (req, res) => {
 
     const connection = await mysql.createConnection(config);
 
-    await connection.query(`CALL sp_insert_interest(?, ?)`, [
+    const [result] = await connection.query(`CALL sp_insert_interest(?, ?)`, [
       userId,
       propertyId,
     ]);
     connection.end();
+    const affectedRows = result.affectedRows;
+    if (affectedRows == 0) {
+      return res
+        .status(404)
+        .json(responseMessage("Insert interest fail", null, "fail", null));
+    }
     return res
       .status(200)
       .json(responseMessage("Insert interest", null, "success", null));
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json(responseMessage("Internal Server error", null, "fail", null));
@@ -351,12 +374,19 @@ const removeInterest = async (req, res) => {
     const propertyId = req.body.propertyId;
     const connection = await mysql.createConnection(config);
     const sqlQuery = `CALL sp_remove_interest(?, ?)`;
-    await connection.query(sqlQuery, [userId, propertyId]);
+    const [result] = await connection.query(sqlQuery, [userId, propertyId]);
     connection.end();
+    const affectedRows = result.affectedRows;
+    if (affectedRows == 0) {
+      return res
+        .status(404)
+        .json(responseMessage("Remove interest fail", null, "fail", null));
+    }
     return res
       .status(200)
       .json(responseMessage("Remove interest", null, "success", null));
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json(responseMessage("Internal Server error", null, "fail", null));
