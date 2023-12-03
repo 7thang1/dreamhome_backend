@@ -59,12 +59,10 @@ const checkUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
+    const { email, password } = req.body;
     const connection = await mysql.createConnection(config);
 
-    const [result] = await connection.query(`CALL sp_login_user(?)`, [
-      req.body.email,
-      req.body.password,
-    ]);
+    const [result] = await connection.query(`CALL sp_login_user(?)`, [email]);
     connection.end();
     const userData = result.slice(0, -1).flat();
     // console.log(userData);
@@ -75,7 +73,7 @@ const loginUser = async (req, res) => {
     }
 
     const validPassword = await bcrypt.compare(
-      req.body.password,
+      password,
       userData[0].password ?? ""
     );
 
@@ -147,13 +145,13 @@ const updateUserInfor = async (req, res) => {
 
     const connection = await mysql.createConnection(config);
 
-    const [result] = await connection.execute(
-      `CALL sp_update_user(?, ?, ?, ?, ?)`,
+    const [result] = await connection.query(
+      `CALL sp_update_user(?, ?, ?, ?, ?, ?)`,
       [userId, email, name, phone, role, image]
     );
     connection.end();
-    const userData = result.slice(0, -1).flat();
-
+    // const userData = result;
+    console.log(userData);
     if (!userData || userData.length === 0) {
       return res
         .status(404)
@@ -164,6 +162,7 @@ const updateUserInfor = async (req, res) => {
       .status(200)
       .json(responseMessage("User updated", userData, "success", null));
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json(responseMessage("Internal Server error", null, "fail", null));
@@ -179,12 +178,12 @@ const resetPassword = async (req, res) => {
 
     const connection = await mysql.createConnection(config);
 
-    const [result] = await connection.execute(`CALL sp_reset_password(?, ?)`, [
+    const [result] = await connection.query(`CALL sp_reset_password(?, ?)`, [
       userId,
       hashedPassword,
     ]);
     connection.end();
-    const userData = result.slice(0, -1).flat();
+    const userData = result;
 
     if (!userData || userData.length === 0) {
       return res

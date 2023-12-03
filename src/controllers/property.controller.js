@@ -202,7 +202,7 @@ const updateProperty = async (req, res) => {
       propertyId,
       JSON.stringify(imageUrls),
     ]);
-
+    connection.end();
     return res
       .status(200)
       .json(responseMessage("Property updated", null, "success", null));
@@ -312,7 +312,7 @@ const updateStatusProperty = async (req, res) => {
       propertyId,
       status,
     ]);
-
+    connection.end();
     return res
       .status(200)
       .json(responseMessage("Update status property", null, "success", null));

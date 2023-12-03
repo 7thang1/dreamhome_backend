@@ -16,8 +16,8 @@ router.route("/register").post(registerUser);
 router.route("/checkUser/:email").get(checkUser);
 router.route("/login").post(loginUser);
 // router.route("/logout").post(authenticateJWT, logoutUser);
-router.route("/getUserInfor").get(authenticateJWT, getUserInfor);
-router.route("/updateUserInfor").put(authenticateJWT, updateUserInfor);
-router.route("/resetPassword").put(authenticateJWT, resetPassword);
+router.route("/getuserinfor").get(authenticateJWT, getUserInfor);
+router.route("/updateuserinfor").put(authenticateJWT, updateUserInfor);
+router.route("/updatepassword").put(authenticateJWT, resetPassword);
 
 module.exports = router;
