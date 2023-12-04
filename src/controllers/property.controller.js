@@ -67,15 +67,9 @@ const creatProperty = async (req, res) => {
 
 const getListProperty = async (req, res) => {
   try {
-    const pageNumber = req.query.pageNumber;
-    const pageSize = 12;
-
     const connection = await mysql.createConnection(config);
 
-    const [result] = await connection.query(`CALL sp_get_list_property(?, ?)`, [
-      pageNumber,
-      pageSize,
-    ]);
+    const [result] = await connection.query(`CALL sp_get_list_property()`);
     connection.end();
     const properties = result.slice(0, -1).flat();
 
@@ -226,14 +220,12 @@ const updateProperty = async (req, res) => {
 const getListPropertybyCategory = async (req, res) => {
   try {
     const category = req.params.category;
-    const pageNumber = req.query.pageNumber;
-    const pageSize = 12;
 
     const connection = await mysql.createConnection(config);
 
     const [result] = await connection.query(
-      `CALL sp_get_property_by_catagory(?, ?, ?)`,
-      [category, pageNumber, pageSize]
+      `CALL sp_get_property_by_catagory(?)`,
+      [category]
     );
     connection.end();
     const properties = result.slice(0, -1).flat();
