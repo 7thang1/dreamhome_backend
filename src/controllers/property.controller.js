@@ -61,7 +61,7 @@ const creatProperty = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -85,7 +85,7 @@ const getListProperty = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -114,7 +114,7 @@ const getUserInterest = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -143,7 +143,7 @@ const getListUserInterest = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -213,7 +213,7 @@ const updateProperty = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -242,7 +242,7 @@ const getListPropertybyCategory = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -271,7 +271,7 @@ const getListPropertyByUser = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -299,7 +299,7 @@ const getDetailProperty = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -327,7 +327,7 @@ const updateStatusProperty = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 // const deleteProperty = async (req, res) => {};
@@ -356,7 +356,7 @@ const insertInterest = async (req, res) => {
     console.log(err);
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -381,7 +381,7 @@ const removeInterest = async (req, res) => {
     console.log(err);
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -405,7 +405,7 @@ const getProvinces = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -429,7 +429,7 @@ const getDistricts = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
@@ -453,7 +453,7 @@ const getWards = async (req, res) => {
   } catch (err) {
     return res
       .status(500)
-      .json(responseMessage("Internal Server error", null, "fail", null));
+      .json(responseMessage("Internal Server error", err, "fail", null));
   }
 };
 
